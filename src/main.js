@@ -8,7 +8,10 @@ const worker = new Worker(new URL('./worker.js', import.meta.url), {
 	type: 'module',
 })
 
-worker.postMessage(import.meta.env.VITE_WEBSOCKET_URL)
+worker.postMessage({
+	type: 'init',
+	env: import.meta.env,
+})
 
 const app = createApp(App)
 
