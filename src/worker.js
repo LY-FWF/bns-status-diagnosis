@@ -3,11 +3,40 @@ let socket = null;
 
 // 在 web worker 中创建一个 WebSocket 客户端
 self.onmessage = function (event) {
-  websocketUrl = event.data;
+  websocketUrl = event.data.env.VITE_WEBSOCKET_URL;
 
   // 初始连接
   connectWebSocket();
 };
+
+async function blobToHexstring(blob) {
+	return new Promise((resolve, reject) => {
+	  const reader = new FileReader();
+	  reader.onloadend = function () {
+		if (this.result instanceof ArrayBuffer) {
+		  const byteArray = new Uint8Array(this.result);
+		  const hexString = Array.from(byteArray).map(byte => byte.toString(16).padStart(2, '0')).join('');
+		  resolve(hexString);
+		} else {
+		  reject(new Error('Invalid result type'));
+		}
+  
+	  };
+	  reader.onerror = reject
+	  reader.readAsArrayBuffer(blob);
+	})
+  }
+  
+  // 使用示例
+  async function handleBlobData(blob) {
+	try {
+	  const hexString = await blobToHexstring(blob);
+	  const processedData = handleReceivedData(hexString);
+	  postMessage(processedData);
+	} catch (error) {
+	  console.error(error);
+	}
+  }
 
 // 建立 WebSocket 连接
 function connectWebSocket() {
@@ -20,8 +49,9 @@ function connectWebSocket() {
 
   // 处理 WebSocket 接收到的消息
   socket.onmessage = function (event) {
-    const processedData = handleReceivedData(event.data);
-    postMessage(processedData);
+    // const processedData = handleReceivedData(event.data);
+    // postMessage(processedData);
+	handleBlobData(event.data)
   };
 
   // 处理 WebSocket 关闭事件
@@ -138,6 +168,7 @@ function handleReceivedData(dataAll) {
 	var bns_state = {}
 	var data1 = dataAll.toString('hex');
 	var data = data1.replaceAll(' ', '')
+	console.log(data);
 	var buf = dataAll.buffer;
 	var unit8 = new Uint8Array(buf);
 	var arr = Array.from(unit8);
@@ -156,6 +187,7 @@ function handleReceivedData(dataAll) {
 		arr[17] +
 		arr[18];
 	var symple = data.substr(10, 2); //获取报文的标志位字符串，05 BNS   
+	console.log(symple);
 	switch (symple) {
 		case "05":
 			bns.train = "CF02"

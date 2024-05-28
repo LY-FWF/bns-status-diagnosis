@@ -93,7 +93,7 @@ export default {
 				// 在这里处理接收到的消息
 				var data_state = JSON.parse(message)//转换为双层对象
 				var symple = data_state.symple     // 定义标志位并赋值
-
+console.log(data_state);
 				switch (symple) {
 					case "05":
 						var bns_th1 = data_state.bns
