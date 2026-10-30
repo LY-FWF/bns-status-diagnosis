@@ -34,7 +34,7 @@ async function blobToHexstring(blob) {
 	  const processedData = handleReceivedData(hexString);
 	  postMessage(processedData);
 	} catch (error) {
-	  console.error(error);
+	//   console.error(error);
 	}
   }
 
@@ -63,7 +63,7 @@ function connectWebSocket() {
 
   // 处理 WebSocket 错误事件
   socket.onerror = function (error) {
-    console.error("WebSocket 错误:", error);
+    // console.error("WebSocket 错误:", error);
     // 出错后重新连接
     setTimeout(connectWebSocket, 1000);
   };
@@ -168,7 +168,7 @@ function handleReceivedData(dataAll) {
 	var bns_state = {}
 	var data1 = dataAll.toString('hex');
 	var data = data1.replaceAll(' ', '')
-	console.log(data);
+	// console.log(data);
 	var buf = dataAll.buffer;
 	var unit8 = new Uint8Array(buf);
 	var arr = Array.from(unit8);
@@ -187,7 +187,7 @@ function handleReceivedData(dataAll) {
 		arr[17] +
 		arr[18];
 	var symple = data.substr(10, 2); //获取报文的标志位字符串，05 BNS   
-	console.log(symple);
+	// console.log(symple);
 	switch (symple) {
 		case "05":
 			bns.train = "CF02"
